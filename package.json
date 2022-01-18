@@ -18,8 +18,10 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.3.0",
     "mongoose": "^6.1.6",
+    "nodemailer": "^6.7.2",
     "nodemon": "^2.0.15",
-    "stripe": "^8.197.0"
+    "stripe": "^8.197.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {}
 }

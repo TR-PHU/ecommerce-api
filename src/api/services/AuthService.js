@@ -1,6 +1,10 @@
 const jwt = require('jsonwebtoken');
 const ErrorHandler = require('../errors/error-handler.js');
 const User = require('../models/User');
+const { sendResetLink } = require('../../common/emails/sendMail');
+
+const { v4: uuidv4 } = require('uuid');
+const bcryptjs = require('bcryptjs');
 
 const register = async (body) => {
     const { username, email, password } = body;
@@ -67,7 +71,42 @@ const login = async (body) => {
     }
 };
 
+const forgetPassword = async (email) => {
+    try {
+        let info = await sendResetLink(email, uuidv4());
+
+        return {
+            meesageId: info.messageId,
+            statusCode: 200,
+            message: 'Send success',
+        };
+    } catch (error) {
+        throw new ErrorHandler(error.message, 500);
+    }
+};
+
+const resetPassword = async (userId, token, newPassword) => {
+    try {
+        const salt = await bcryptjs.genSalt(10);
+        const hashPassword = await bcryptjs.hash(newPassword, salt);
+        const user = await User.findOneAndUpdate(
+            { _id: userId, resetToken: token },
+            { password: hashPassword },
+            { new: true }
+        );
+        const { password, ...others } = user._doc;
+        return {
+            user: others,
+            statusCode: 200,
+            message: 'Reset password success',
+        };
+    } catch (error) {
+        throw new ErrorHandler(error.message, 500);
+    }
+};
 module.exports = {
     register,
     login,
+    forgetPassword,
+    resetPassword,
 };

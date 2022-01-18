@@ -13,7 +13,7 @@ const verifyToken = (req, res, next) => {
             },
         });
     }
-    const decodeToken = jwt.verify(token, process.env.SECRET_KEY);
+    const decodeToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
     if (!decodeToken) {
         return res.status(403).json({
             err: {
